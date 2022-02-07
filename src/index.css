@@ -1,7 +1,6 @@
 .center {
   text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+  justify-content: center;
 }
 
 html {
@@ -13,6 +12,8 @@ table {
   border: 2px solid rgb(200, 200, 200);
   letter-spacing: 1px;
   font-size: 0.8rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 td,

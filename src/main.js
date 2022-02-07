@@ -1,5 +1,8 @@
-const { app, BrowserWindow, Menu } = require('electron');
+const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
+
+let mainWindow;
+let addWindow;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -7,11 +10,18 @@ if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+// Catch item add
+
+
 const createWindow = () => {
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+  }
   });
 
   // and load the index.html of the app.
@@ -25,10 +35,13 @@ const createWindow = () => {
 };
 
 const createAddWindow = () => {
-  console.log("Create Add Window");
-  let addWindow = new BrowserWindow({
-    width: 600,
-    height: 450
+  addWindow = new BrowserWindow({
+    width: 450,
+    height: 550,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+  }
   })
 
   addWindow.loadFile(path.join(__dirname, 'addWindow.html'));
@@ -100,6 +113,9 @@ const mainMenuTemplate =[
   }
 ];
 
+ipcMain.on('item:add', function(e, item){
+  mainWindow.webContents.send('item:add', item);
+})
 
 // Add developers tools item if not in production
 if(process.env.NODE_ENV !== "production"){

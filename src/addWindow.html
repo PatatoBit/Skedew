@@ -2,13 +2,55 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <title>Add Window</title>
 </head>
 <body>
     <h2 class="center">Add Window</h2>
-    <form clas="center">
-        <input type="text">
-        <button type="submit">Submit</button>
-    </form>
+    <div class="container">
+        <form class="center">
+            <input type="text" id="item" class='center'>
+            <button type="submit" class="btn waves-effect waves-light blue">Submit</button>
+        </form>
+    </div>
+    <ul></ul>
 </body>
+
+<script>
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+
+    const ul = document.querySelector('ul')
+    const form =  document.querySelector('form')
+
+
+    form.addEventListener('submit', function(e) {
+
+        e.preventDefault();
+        ul.className="collection"
+        const item = document.querySelector("#item").value
+        if(item.length != 0){
+            ipcRenderer.send("item:add", item)
+
+            const li = document.createElement("li")
+            li.className="collection-item center"
+            const itemText = document.createTextNode(item)
+            li.appendChild(itemText)
+            ul.appendChild(li)
+            form.reset()
+        }
+    })
+
+    // Double click to remove item
+    ul.addEventListener('dblclick', removeItem);
+        function removeItem(e){
+            e.target.remove()
+            if(ul.children.length == 0){
+                ul.className=""
+            }
+        }
+
+    // Send data to other scripts
+
+</script>
 </html>

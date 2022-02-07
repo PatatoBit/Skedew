@@ -1,31 +1,153 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Skedew🦆</title>
     <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <title>Skedew🦆</title>
   </head>
+
   <body>
     <h1 class="center">Skedew🦆</h1>
     <table class="center">
-      <tr></tr>
       <tr>
+      </tr>
+      <tr id="monday">
         <th>Monday</th>
       </tr>
-      <tr>
+      <tr id="tuesday">
         <th>Tuesday</th>
       </tr>
-      <tr>
+      <tr id="wednesday">
         <th>Wednesday</th>
       </tr>
-      <tr>
+      <tr id="thursday">
         <th>Thursday</th>
       </tr>
-      <tr>
+      <tr id="friday">
         <th>Friday</th>
       </tr>
+
+      <ul id="subjectList">
     </table>
+    <div class="center">
+      <button class="btn waves-effect waves-light blue" onclick="buttonSubmit()">randomize</button>
+      <button class="btn waves-effect waves-light blue" onclick="dayReset()">reset</button>
+    </div>
   </body>
+
   <script>
+    const electron = require('electron');
+    const {ipcRenderer} = electron;
+
+    const monday = document.querySelector('#monday');
+    const tuesday = document.querySelector('#tuesday');
+    const wednesday = document.querySelector("#wednesday");
+    const thursday = document.querySelector("#thursday")
+    const friday = document.querySelector("#friday");
     
+    let subjectList = new Array();
+
+    let mondayList = new Array();
+    let tuesdayList = new Array();
+    let wednesdayList = new Array();
+    let thursdayList = new Array();
+    let fridayList = new Array();
+    
+    let dayList = new Array();
+    dayList.push(mondayList, tuesdayList, wednesdayList, thursdayList, fridayList)
+    day_list = new Array(monday, tuesday, wednesday, thursday, friday);
+
+    const btn = document.querySelector("btn")
+    const ul = document.querySelector('ul');
+
+
+    ipcRenderer.on("item:add", function(e, item) {
+      subjectList.push(item);
+    })
+    
+    function buttonSubmit(){
+      subjectList.reverse()
+      randomSubject()
+      dayRefresh()
+      subjectList.reverse()
+    }
+    
+    function randomSubject(){
+      let indexA = Math.floor(Math.random() * subjectList.length)
+      
+      subjectList.forEach(subject => {
+        let indexB = Math.floor(Math.random() * dayList.length)
+        if(containsObject(subject, dayList[indexB])){
+          console.log("Already added")
+        } else {
+          dayList[indexB].push(subject)
+        }
+      })
+    }
+    
+    function containsObject(obj, list) {
+      var i;
+      for (i = 0; i < list.length; i++) {
+          if (list[i] === obj) {
+              return true;
+          }
+      }
+      return false;
+    }
+    
+
+    function dayRefresh() {
+      mondayList.forEach(subject => {
+        add(subject, monday)
+      })
+      tuesdayList.forEach(subject => {
+        add(subject, tuesday)
+      })
+      wednesdayList.forEach(subject => {
+        add(subject, wednesday)
+      })
+      thursdayList.forEach(subject => {
+        add(subject, thursday)
+      })
+      fridayList.forEach(subject => {
+        add(subject, friday)
+      })
+    }
+    
+    function dayReset() {
+      dayList.forEach(day => {
+        subjectList = [];
+        day = [];
+      })
+
+      day_list.forEach(day => {
+        day.innerHTML = ''
+      })
+
+      addHeader(createHeader("Monday"), monday, 0)
+      addHeader(createHeader("Tuesday"), tuesday, 0)
+      addHeader(createHeader("Wednesday"), wednesday, 0)
+      addHeader(createHeader("Thursday"), thursday, 0)
+      addHeader(createHeader("Friday"), friday, 0)
+    }
+    
+    
+    function createHeader(head) {
+      const th = document.createElement("th")
+      let text = document.createTextNode(head)
+      th.appendChild(text)
+      return th;
+    }
+
+    function addHeader(subject, row){
+      row.appendChild(subject)
+    }
+
+    function add(subject, row, cell = 1) {
+      let x = row.insertCell(cell)
+      x.innerHTML = subject
+    }
   </script>
+  
+
 </html>
